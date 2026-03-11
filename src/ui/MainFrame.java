@@ -10,18 +10,13 @@ package ui;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-
-
     //ProjectDialogComponents
     private String projectName = null;
     private String productName = null;
     private String creatorName = null;
     private String projectComments = null;
     private String selectedLanguage = "None";
-    
-    /**
-     * Creates new form MainFrame
-     */
+
     //Project Title Name 
     private void updateTitleBar() {
         if (projectName == null || projectName.isBlank()) {
@@ -39,6 +34,36 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         return false;
+    }
+
+    //Current Language in FP pane
+    public void setSelectedLanguage(String lang) {
+        selectedLanguage = (lang == null || lang.isBlank()) ? "None" : lang;
+
+    }
+
+    public String getSelectedLanguage() {
+        return selectedLanguage;
+    }
+
+    //To Save the whole project along with FP metric files- 2 helper methods
+    private static void putAllWithPrefix(java.util.Properties dest,
+            String prefix,
+            java.util.Properties src) {
+        for (String k : src.stringPropertyNames()) {
+            dest.setProperty(prefix + k, src.getProperty(k));
+        }
+    }
+
+    private static java.util.Properties subProperties(java.util.Properties src,
+            String prefix) {
+        java.util.Properties out = new java.util.Properties();
+        for (String k : src.stringPropertyNames()) {
+            if (k.startsWith(prefix)) {
+                out.setProperty(k.substring(prefix.length()), src.getProperty(k));
+            }
+        }
+        return out;
     }
 
     public MainFrame() {
@@ -186,14 +211,20 @@ public class MainFrame extends javax.swing.JFrame {
 // Clear ALL panes/tabs for a truly new project
         jTabbedPane1.removeAll();
 
-
 // Update window title
         updateTitleBar();
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        // intentionally left blank
+        LanguageDialog dlg = new LanguageDialog(this, true);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+
+        String chose = dlg.getChosenLanguage();
+        if (chose != null) {
+            setSelectedLanguage(chose);
+        }
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
@@ -206,43 +237,43 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         // Cancel pressed
-                if (name == null) {
-                    return;
-                }
+        if (name == null) {
+            return;
+        }
 
-                name = name.trim();
+        name = name.trim();
         // Cancel pressed
-            if (name == null) {
-                return;
-            }
+        if (name == null) {
+            return;
+        }
 
-            name = name.trim();
+        name = name.trim();
 
-            // Empty name -> default
-            if (name.isEmpty()) {
-                name = "Function Points";
-            }
+        // Empty name -> default
+        if (name.isEmpty()) {
+            name = "Function Points";
+        }
 
-            // Avoid duplicate tab titles by appending (2), (3), ...
-            String base = name;
-            int suffix = 2;
-            while (tabTitleExists(name)) {
-                name = base + " (" + suffix + ")";
-                suffix++;
-            }
+        // Avoid duplicate tab titles by appending (2), (3), ...
+        String base = name;
+        int suffix = 2;
+        while (tabTitleExists(name)) {
+            name = base + " (" + suffix + ")";
+            suffix++;
+        }
 
-            // Create pane + set current language + add tab
-            FunctionPointsPanel fp = new FunctionPointsPanel();
-
-            jTabbedPane1.addTab(name, fp);
-            jTabbedPane1.setSelectedComponent(fp);
+        // Create pane + set current language + add tab
+        FunctionPointsPanel fp = new FunctionPointsPanel();
+        fp.setCurrentLanguage(selectedLanguage);
+        jTabbedPane1.addTab(name, fp);
+        jTabbedPane1.setSelectedComponent(fp);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // Save the currently selected FP tab (must be a FunctionPointsPanel)
-        java.awt.Component c = jTabbedPane1.getSelectedComponent();
-        if (!(c instanceof FunctionPointsPanel fp)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Open a Function Points pane first.");
+
+        // Must have a project name (optional, but typical)
+        if (projectName == null || projectName.isBlank()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Create a project first (File → New).");
             return;
         }
 
@@ -251,7 +282,9 @@ public class MainFrame extends javax.swing.JFrame {
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
 
         int result = chooser.showSaveDialog(this);
-        if (result != javax.swing.JFileChooser.APPROVE_OPTION) return;
+        if (result != javax.swing.JFileChooser.APPROVE_OPTION) {
+            return;
+        }
 
         java.io.File file = chooser.getSelectedFile();
         String path = file.getAbsolutePath();
@@ -259,13 +292,56 @@ public class MainFrame extends javax.swing.JFrame {
             file = new java.io.File(path + ".ms");
         }
 
-        java.util.Properties props = fp.toProperties();
+        if (file.exists()) {
+    int choice = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "File already exists:\n" + file.getName() + "\n\nReplace it?",
+            "Confirm overwrite",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.WARNING_MESSAGE
+    );
+    if (choice != javax.swing.JOptionPane.YES_OPTION) {
+        return; // user cancelled overwrite
+    }
+}
+        
+        java.util.Properties props = new java.util.Properties();
 
-        // (Optional) save project name etc if you want
-        if (projectName != null) props.setProperty("project.name", projectName);
-        if (productName != null) props.setProperty("product.name", productName);
-        if (creatorName != null) props.setProperty("creator.name", creatorName);
-        if (projectComments != null) props.setProperty("project.comments", projectComments);
+        // ---- project metadata (4.35 / 4.37) ----
+        if (projectName != null) {
+            props.setProperty("project.name", projectName);
+        }
+        if (productName != null) {
+            props.setProperty("product.name", productName);
+        }
+        if (creatorName != null) {
+            props.setProperty("creator.name", creatorName);
+        }
+        if (projectComments != null) {
+            props.setProperty("project.comments", projectComments);
+        }
+
+        // ---- panes (4.35) ----
+        int paneCount = jTabbedPane1.getTabCount();
+        props.setProperty("panes.count", String.valueOf(paneCount));
+
+        for (int i = 0; i < paneCount; i++) {
+            java.awt.Component c = jTabbedPane1.getComponentAt(i);
+            String title = jTabbedPane1.getTitleAt(i);
+
+            props.setProperty("pane." + i + ".title", title);
+
+            if (c instanceof FunctionPointsPanel fp) {
+                props.setProperty("pane." + i + ".type", "fp");
+
+                java.util.Properties paneProps = fp.toProperties();
+                putAllWithPrefix(props, "pane." + i + ".", paneProps);
+
+            } else {
+                // unknown pane type (future metrics)
+                props.setProperty("pane." + i + ".type", "unknown");
+            }
+        }
 
         try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
             props.store(out, "CECS 544 Metrics Suite Project");
@@ -281,7 +357,9 @@ public class MainFrame extends javax.swing.JFrame {
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
 
         int result = chooser.showOpenDialog(this);
-        if (result != javax.swing.JFileChooser.APPROVE_OPTION) return;
+        if (result != javax.swing.JFileChooser.APPROVE_OPTION) {
+            return;
+        }
 
         java.io.File file = chooser.getSelectedFile();
 
@@ -293,37 +371,42 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
 
-        // Load project metadata (optional)
-        projectName = props.getProperty("project.name", projectName);
-        productName = props.getProperty("product.name", productName);
-        creatorName = props.getProperty("creator.name", creatorName);
-        projectComments = props.getProperty("project.comments", projectComments);
+        // ---- project metadata ----
+        projectName = props.getProperty("project.name", "");
+        productName = props.getProperty("product.name", "");
+        creatorName = props.getProperty("creator.name", "");
+        projectComments = props.getProperty("project.comments", "");
         updateTitleBar();
 
-        // Create a new FP pane and load values into it
-        FunctionPointsPanel fp = new FunctionPointsPanel();
-        fp.loadFromProperties(props);
+        // ---- clear current tabs ----
+        jTabbedPane1.removeAll();
 
-        // Also update MainFrame selectedLanguage so future tabs inherit it
-        String lang = props.getProperty("language", "").trim();
-        if (!lang.isEmpty()) {
-            selectedLanguage = lang;
+        // ---- load panes ----
+        int paneCount = 0;
+        try {
+            paneCount = Integer.parseInt(props.getProperty("panes.count", "0"));
+        } catch (NumberFormatException ignored) {
         }
 
-        String tabName = "Function Points";
-        String savedTabName = props.getProperty("tab.name", "").trim();
-        if (!savedTabName.isEmpty()) tabName = savedTabName;
+        for (int i = 0; i < paneCount; i++) {
+            String type = props.getProperty("pane." + i + ".type", "unknown");
+            String title = props.getProperty("pane." + i + ".title", "Pane " + (i + 1));
 
-        // Avoid duplicate names
-        String base = tabName;
-        int suffix = 2;
-        while (tabTitleExists(tabName)) {
-            tabName = base + " (" + suffix + ")";
-            suffix++;
+            if ("fp".equals(type)) {
+                FunctionPointsPanel fp = new FunctionPointsPanel();
+
+                java.util.Properties paneProps = subProperties(props, "pane." + i + ".");
+                fp.loadFromProperties(paneProps);
+
+                jTabbedPane1.addTab(title, fp);
+            } else {
+                // future: other metric pane types
+            }
         }
 
-        jTabbedPane1.addTab(tabName, fp);
-        jTabbedPane1.setSelectedComponent(fp);
+        if (jTabbedPane1.getTabCount() > 0) {
+            jTabbedPane1.setSelectedIndex(0);
+        }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**

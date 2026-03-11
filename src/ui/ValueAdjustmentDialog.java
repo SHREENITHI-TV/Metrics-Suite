@@ -8,7 +8,7 @@ public class ValueAdjustmentDialog extends JDialog {
     private boolean approved = false;
     private final javax.swing.JComboBox<Integer>[] boxes;
     private int sum = 0;
-    
+
     private static final String[] QUESTIONS = {
         "Does the system require reliable backup and recovery processes?",
         "Are specialized data communications required to transfer information to or from the application?",
@@ -26,12 +26,19 @@ public class ValueAdjustmentDialog extends JDialog {
         "Is the application designed to facilitate change and for ease of use by the user?"
     };
 
-    public boolean isApproved() { return approved; }
-    public int getSum() { return sum; }
-    
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public int getSum() {
+        return sum;
+    }
+
     public int[] getValues() {
         int[] v = new int[14];
-        for (int i = 0; i < 14; i++) v[i] = (Integer) boxes[i].getSelectedItem();
+        for (int i = 0; i < 14; i++) {
+            v[i] = (Integer) boxes[i].getSelectedItem();
+        }
         return v;
     }
 
@@ -49,10 +56,14 @@ public class ValueAdjustmentDialog extends JDialog {
         for (int i = 0; i < 14; i++) {
             JLabel label = new JLabel(QUESTIONS[i]);
             JComboBox<Integer> cb = new JComboBox<>();
-            for (int v = 0; v <= 5; v++) cb.addItem(v);
+            for (int v = 0; v <= 5; v++) {
+                cb.addItem(v);
+            }
 
             int init = (initialValues != null && initialValues.length == 14) ? initialValues[i] : 0;
-            if (init < 0 || init > 5) init = 0;
+            if (init < 0 || init > 5) {
+                init = 0;
+            }
             cb.setSelectedItem(init);
 
             boxes[i] = cb;
@@ -65,7 +76,9 @@ public class ValueAdjustmentDialog extends JDialog {
 
         ok.addActionListener(e -> {
             sum = 0;
-            for (int i = 0; i < 14; i++) sum += (Integer) boxes[i].getSelectedItem();
+            for (int i = 0; i < 14; i++) {
+                sum += (Integer) boxes[i].getSelectedItem();
+            }
             approved = true;
             dispose();
         });
@@ -80,8 +93,17 @@ public class ValueAdjustmentDialog extends JDialog {
         buttons.add(cancel);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(new JScrollPane(grid), BorderLayout.CENTER);
-        getContentPane().add(buttons, BorderLayout.SOUTH);
+        //header at top
+        JLabel header = new JLabel("<html><b>Assign a value from 0 to 5</b> for each of the following Value Adjustment Factors:</html>");
+        header.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+
+
+        JPanel root = new JPanel(new BorderLayout());
+        root.add(header, BorderLayout.NORTH);
+        root.add(new JScrollPane(grid), BorderLayout.CENTER);
+        root.add(buttons, BorderLayout.SOUTH);
+
+        setContentPane(root);
 
         pack();
         setLocationRelativeTo(parent);
