@@ -34,23 +34,55 @@ public class LanguageDialog extends javax.swing.JDialog {
         initComponents();
         preselect(currentLanguage);
     }
-    
-    private void preselect(String currentLanguage) {
-        if (currentLanguage == null) return;
 
-        if ("Assembler".equals(currentLanguage)) jCheckBox1.setSelected(true);
-        else if ("Ada 95".equals(currentLanguage)) jCheckBox2.setSelected(true);
-        else if ("C".equals(currentLanguage)) jCheckBox3.setSelected(true);
-        else if ("C++".equals(currentLanguage)) jCheckBox4.setSelected(true);
-        else if ("C#".equals(currentLanguage)) jCheckBox5.setSelected(true);
-        else if ("COBOL".equals(currentLanguage)) jCheckBox6.setSelected(true);
-        else if ("FORTRAN".equals(currentLanguage)) jCheckBox7.setSelected(true);
-        else if ("HTML".equals(currentLanguage)) jCheckBox8.setSelected(true);
-        else if ("Java".equals(currentLanguage)) jCheckBox9.setSelected(true);
-        else if ("JavaScript".equals(currentLanguage)) jCheckBox10.setSelected(true);
-        else if ("VBScript".equals(currentLanguage)) jCheckBox11.setSelected(true);
-        else if ("Visual Basic".equals(currentLanguage)) jCheckBox12.setSelected(true);
+    private void preselect(String currentLanguage) {
+        if (currentLanguage == null) {
+            return;
+        }
+
+        currentLanguage = currentLanguage.trim();
+        if (currentLanguage.isEmpty() || currentLanguage.equalsIgnoreCase("None")) {
+            return;
+        }
+
+        // Clear group selection first (important)
+        buttonGroup1.clearSelection();
+
+        // Select the matching checkbox
+        switch (currentLanguage) {
+            case "Assembler" ->
+                jCheckBox1.setSelected(true);
+            case "Ada 95" ->
+                jCheckBox2.setSelected(true);
+            case "C" ->
+                jCheckBox3.setSelected(true);
+            case "C++" ->
+                jCheckBox4.setSelected(true);
+            case "C#" ->
+                jCheckBox5.setSelected(true);
+            case "COBOL" ->
+                jCheckBox6.setSelected(true);
+            case "FORTRAN" ->
+                jCheckBox7.setSelected(true);
+            case "HTML" ->
+                jCheckBox8.setSelected(true);
+            case "Java" ->
+                jCheckBox9.setSelected(true);
+            case "JavaScript" ->
+                jCheckBox10.setSelected(true);
+            case "VBScript" ->
+                jCheckBox11.setSelected(true);
+            case "Visual Basic" ->
+                jCheckBox12.setSelected(true);
+            default -> {
+                return;
+            }
+        }
+
+        // Ensure chosenLanguage matches the preselected option
+        chosenLanguage = currentLanguage;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -260,18 +292,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox1ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox1.isSelected()) {
-            // Unselect all others
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "Assembler";
         }
     }//GEN-LAST:event_jCheckBox1ItemStateChanged
@@ -283,18 +303,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox2ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox2.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "Ada 95";
         }
     }//GEN-LAST:event_jCheckBox2ItemStateChanged
@@ -302,18 +310,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox3ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox3ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox3.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "C";
         }
     }//GEN-LAST:event_jCheckBox3ItemStateChanged
@@ -321,18 +317,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox4ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox4.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "C++";
         }
     }//GEN-LAST:event_jCheckBox4ItemStateChanged
@@ -340,18 +324,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox5ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox5.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "C#";
         }
     }//GEN-LAST:event_jCheckBox5ItemStateChanged
@@ -359,18 +331,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox6ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox6ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox6.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "COBOL";
         }
     }//GEN-LAST:event_jCheckBox6ItemStateChanged
@@ -378,18 +338,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox7ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox7.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "FORTRAN";
         }
     }//GEN-LAST:event_jCheckBox7ItemStateChanged
@@ -397,18 +345,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox8ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox8.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "HTML";
         }
     }//GEN-LAST:event_jCheckBox8ItemStateChanged
@@ -416,18 +352,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox9ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox9ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox9.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "Java";
         }
     }//GEN-LAST:event_jCheckBox9ItemStateChanged
@@ -435,18 +359,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox10ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox10ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox10.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox11.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "JavaScript";
         }
     }//GEN-LAST:event_jCheckBox10ItemStateChanged
@@ -454,18 +366,6 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox11ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox11ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox11.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox12.setSelected(false);
             chosenLanguage = "VBScript";
         }
     }//GEN-LAST:event_jCheckBox11ItemStateChanged
@@ -473,24 +373,15 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox12ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox12ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox12.isSelected()) {
-            // Unselect all others
-            jCheckBox1.setSelected(false);
-            jCheckBox2.setSelected(false);
-            jCheckBox3.setSelected(false);
-            jCheckBox4.setSelected(false);
-            jCheckBox5.setSelected(false);
-            jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
-            jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
-            jCheckBox10.setSelected(false);
-            jCheckBox11.setSelected(false);
             chosenLanguage = "Visual Basic";
         }
     }//GEN-LAST:event_jCheckBox12ItemStateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // If user picked a checkbox, chosenLanguage was already set in itemStateChanged handlers
+        if (chosenLanguage == null || chosenLanguage.trim().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Select a language first.");
+            return;
+        }
         approved = true;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed

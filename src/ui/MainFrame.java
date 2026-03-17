@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package ui;
+import java.io.File;
 
 /**
  *
@@ -68,6 +69,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public MainFrame() {
         initComponents();
+        jMenu5.setVisible(false);
         updateTitleBar();
     }
 
@@ -103,6 +105,11 @@ public class MainFrame extends javax.swing.JFrame {
         jTabbedPane1.setName("mainTabbedPane"); // NOI18N
 
         jMenu1.setText("File");
+        jMenu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu1ActionPerformed(evt);
+            }
+        });
 
         jMenuItem1.setText("New");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -130,6 +137,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu1.add(jSeparator1);
 
         jMenuItem4.setText("Exit");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem4);
 
         jMenuBar1.add(jMenu1);
@@ -166,6 +178,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Project Code");
+        jMenu5.setEnabled(false);
         jMenuBar1.add(jMenu5);
 
         jMenu6.setText("Help");
@@ -192,6 +205,7 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         NewProjectJDialog dlg = new NewProjectJDialog(this, true);
@@ -217,7 +231,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        LanguageDialog dlg = new LanguageDialog(this, true);
+        LanguageDialog dlg = new LanguageDialog(this, true, selectedLanguage);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
 
@@ -236,12 +250,6 @@ public class MainFrame extends javax.swing.JFrame {
                 javax.swing.JOptionPane.QUESTION_MESSAGE
         );
 
-        // Cancel pressed
-        if (name == null) {
-            return;
-        }
-
-        name = name.trim();
         // Cancel pressed
         if (name == null) {
             return;
@@ -281,30 +289,44 @@ public class MainFrame extends javax.swing.JFrame {
         chooser.setDialogTitle("Save Project");
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
 
+        String safeProject = projectName.trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+        chooser.setSelectedFile(new java.io.File(safeProject + ".ms"));
+
         int result = chooser.showSaveDialog(this);
         if (result != javax.swing.JFileChooser.APPROVE_OPTION) {
             return;
         }
 
-        java.io.File file = chooser.getSelectedFile();
-        String path = file.getAbsolutePath();
-        if (!path.toLowerCase().endsWith(".ms")) {
-            file = new java.io.File(path + ".ms");
+        File file = chooser.getSelectedFile();
+
+        File dir = file.getParentFile();
+        File target = new File(dir, safeProject + ".ms");
+
+// If user chose a different name, inform them (optional)
+        if (!target.getName().equalsIgnoreCase(file.getName())) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Saving project using the project name:\n" + target.getName(),
+                    "Filename adjusted",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+            );
         }
 
+        file = target;
+
         if (file.exists()) {
-    int choice = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "File already exists:\n" + file.getName() + "\n\nReplace it?",
-            "Confirm overwrite",
-            javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.WARNING_MESSAGE
-    );
-    if (choice != javax.swing.JOptionPane.YES_OPTION) {
-        return; // user cancelled overwrite
-    }
-}
-        
+            int choice = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "File already exists:\n" + file.getName() + "\n\nReplace it?",
+                    "Confirm overwrite",
+                    javax.swing.JOptionPane.YES_NO_OPTION,
+                    javax.swing.JOptionPane.WARNING_MESSAGE
+            );
+            if (choice != javax.swing.JOptionPane.YES_OPTION) {
+                return; // user cancelled overwrite
+            }
+        }
+
         java.util.Properties props = new java.util.Properties();
 
         // ---- project metadata (4.35 / 4.37) ----
@@ -408,6 +430,16 @@ public class MainFrame extends javax.swing.JFrame {
             jTabbedPane1.setSelectedIndex(0);
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenu1ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments

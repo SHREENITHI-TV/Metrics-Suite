@@ -133,32 +133,19 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             return -1;
         }
         return switch (lang) {
-            case "Assembler" ->
-                320;
-            case "Ada 95" ->
-                70;
-            case "C" ->
-                128;
-            case "C++" ->
-                64;
-            case "C#" ->
-                58;
-            case "COBOL" ->
-                80;
-            case "FORTRAN" ->
-                105;
-            case "HTML" ->
-                15;
-            case "Java" ->
-                53;
-            case "JavaScript" ->
-                47;
-            case "VBScript" ->
-                38;
-            case "Visual Basic" ->
-                50;
-            default ->
-                -1;
+            case "Assembler" -> 209;
+            case "Ada 95" -> 154;
+            case "C" -> 148;
+            case "C++" -> 59;
+            case "C#" -> 58;
+            case "COBOL" -> 80;
+            case "FORTRAN" -> 90;
+            case "HTML" -> 43;
+            case "Java" -> 55;
+            case "JavaScript" -> 54;
+            case "VBScript" -> 38;
+            case "Visual Basic" -> 50;
+            default -> -1;
         };
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -672,7 +659,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        LanguageDialog dlg = new LanguageDialog((java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this), true);
+        LanguageDialog dlg = new LanguageDialog((java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this), true, currentLanguage);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
 
