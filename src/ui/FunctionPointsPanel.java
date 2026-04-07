@@ -90,6 +90,13 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
         jTextField11.setText(String.valueOf(t1 + t2 + t3 + t4 + t5));
     }
 
+    private boolean allCountFieldsEmpty() {
+        return jTextField1.getText().trim().isEmpty()
+                && jTextField2.getText().trim().isEmpty()
+                && jTextField3.getText().trim().isEmpty()
+                && jTextField4.getText().trim().isEmpty()
+                && jTextField5.getText().trim().isEmpty();
+    }
     private boolean handlingValidationPopup = false;
 
     private void safeRecompute(boolean showPopup) {
@@ -133,19 +140,32 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             return -1;
         }
         return switch (lang) {
-            case "Assembler" -> 209;
-            case "Ada 95" -> 154;
-            case "C" -> 148;
-            case "C++" -> 59;
-            case "C#" -> 58;
-            case "COBOL" -> 80;
-            case "FORTRAN" -> 90;
-            case "HTML" -> 43;
-            case "Java" -> 55;
-            case "JavaScript" -> 54;
-            case "VBScript" -> 38;
-            case "Visual Basic" -> 50;
-            default -> -1;
+            case "Assembler" ->
+                209;
+            case "Ada 95" ->
+                154;
+            case "C" ->
+                148;
+            case "C++" ->
+                59;
+            case "C#" ->
+                58;
+            case "COBOL" ->
+                80;
+            case "FORTRAN" ->
+                90;
+            case "HTML" ->
+                43;
+            case "Java" ->
+                55;
+            case "JavaScript" ->
+                54;
+            case "VBScript" ->
+                38;
+            case "Visual Basic" ->
+                50;
+            default ->
+                -1;
         };
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -674,22 +694,46 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (!vafConfirmed) {
-            int choice = javax.swing.JOptionPane.showConfirmDialog(
-                    this,
-                    "You haven't confirmed Value Adjustments (VAF) yet.\nOpen the VAF dialog now?",
-                    "VAF required",
-                    javax.swing.JOptionPane.YES_NO_OPTION
-            );
-
-            if (choice == javax.swing.JOptionPane.YES_OPTION) {
-                jButton2ActionPerformed(null); // opens Value Adjustments (your VAF button handler)
-            }
+        // If no FP input data entered, ignore Compute FP per script
+        if (allCountFieldsEmpty()) {
             return;
         }
+
         try {
-            // Ensure totals/Total Count are up-to-date
+            // Always refresh totals first
             recomputeAllTotals();
+
+            // If VAF has not been confirmed yet, ask to use current total first
+            if (!vafConfirmed) {
+                int proceedChoice = javax.swing.JOptionPane.showConfirmDialog(
+                        this,
+                        "The current VAF total is set to " + vafSum + ".\nDo you want to proceed with this value?",
+                        "Confirm VAF Total",
+                        javax.swing.JOptionPane.YES_NO_OPTION
+                );
+
+                if (proceedChoice == javax.swing.JOptionPane.YES_OPTION) {
+                    vafConfirmed = true;
+                } else {
+                    int openChoice = javax.swing.JOptionPane.showConfirmDialog(
+                            this,
+                            "Do you want to open the VAF dialog and set it now?",
+                            "Open VAF Dialog",
+                            javax.swing.JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (openChoice == javax.swing.JOptionPane.YES_OPTION) {
+                        jButton2ActionPerformed(null);   // opens VAF dialog and saves values if approved
+
+                        // If user closed/cancelled the VAF dialog, stop here
+                        if (!vafConfirmed) {
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            }
 
             // Read Total Count from the field recomputeAllTotals already sets
             int totalCount = 0;
@@ -698,13 +742,11 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
                 totalCount = Integer.parseInt(tc);
             }
 
-            // VAF and FP
-            double vaf = 0.65 + 0.01 * vafSum;     // vafSum must already be maintained elsewhere
+            // Compute VAF and FP
+            double vaf = 0.65 + 0.01 * vafSum;
             double fp = totalCount * vaf;
 
-            // Display results (use your actual output fields)
-            // If you have a VAF field, set it too:
-            // jTextField12.setText(String.format("%,.2f", vaf));  // example
+            // Show FP result
             jTextField13.setText(String.format("%,.2f", fp));
 
         } catch (NumberFormatException ex) {
@@ -745,14 +787,15 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             return;
         }
 
-        double fp;
+        double fpDouble;
         try {
-            fp = Double.parseDouble(fpText.replace(",", ""));
+            fpDouble = Double.parseDouble(fpText.replace(",", ""));
         } catch (NumberFormatException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "FP value is invalid.");
             return;
         }
 
+        int fp = (int) fpDouble;   // truncate decimal part
         String lang = (currentLanguage == null || currentLanguage.isBlank()) ? "None" : currentLanguage;
         int loc = locPerFp(lang);
         if (loc < 0) {

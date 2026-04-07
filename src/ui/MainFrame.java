@@ -1,8 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package ui;
+
 import java.io.File;
 
 /**
@@ -205,7 +203,7 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
+
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         NewProjectJDialog dlg = new NewProjectJDialog(this, true);
@@ -342,6 +340,9 @@ public class MainFrame extends javax.swing.JFrame {
         if (projectComments != null) {
             props.setProperty("project.comments", projectComments);
         }
+        if (selectedLanguage != null) {
+            props.setProperty("project.language", selectedLanguage);
+        }
 
         // ---- panes (4.35) ----
         int paneCount = jTabbedPane1.getTabCount();
@@ -398,6 +399,7 @@ public class MainFrame extends javax.swing.JFrame {
         productName = props.getProperty("product.name", "");
         creatorName = props.getProperty("creator.name", "");
         projectComments = props.getProperty("project.comments", "");
+        selectedLanguage = props.getProperty("project.language", "None");
         updateTitleBar();
 
         // ---- clear current tabs ----
@@ -437,7 +439,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        
+
         System.exit(0);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 

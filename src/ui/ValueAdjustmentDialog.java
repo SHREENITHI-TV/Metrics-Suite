@@ -67,14 +67,24 @@ public class ValueAdjustmentDialog extends JDialog {
             cb.setSelectedItem(init);
 
             boxes[i] = cb;
-            grid.add(label);
-            grid.add(cb);
+            JPanel row = new JPanel(new BorderLayout());
+
+            row.add(label, BorderLayout.CENTER);
+
+            // Wrap combo box in a small panel to control its size
+            JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+            cb.setPreferredSize(new Dimension(50, 25));  // <-- adjust width here
+            right.add(cb);
+
+            row.add(right, BorderLayout.EAST);
+
+            grid.add(row);
         }
 
-        JButton ok = new JButton("OK");
+        JButton done = new JButton("Done");
         JButton cancel = new JButton("Cancel");
 
-        ok.addActionListener(e -> {
+        done.addActionListener(e -> {
             sum = 0;
             for (int i = 0; i < 14; i++) {
                 sum += (Integer) boxes[i].getSelectedItem();
@@ -88,15 +98,16 @@ public class ValueAdjustmentDialog extends JDialog {
             dispose();
         });
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(ok);
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttons.setBorder(BorderFactory.createEmptyBorder(8, 12, 12, 12));
+
+        buttons.add(done);
         buttons.add(cancel);
 
         getContentPane().setLayout(new BorderLayout());
         //header at top
         JLabel header = new JLabel("<html><b>Assign a value from 0 to 5</b> for each of the following Value Adjustment Factors:</html>");
         header.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
-
 
         JPanel root = new JPanel(new BorderLayout());
         root.add(header, BorderLayout.NORTH);
