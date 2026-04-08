@@ -1,4 +1,3 @@
-
 package ui;
 
 import java.io.File;
@@ -94,6 +93,8 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         jMenu7 = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenu10 = new javax.swing.JMenu();
+        jMenuItem9 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
 
@@ -172,6 +173,18 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu7.add(jMenuItem6);
 
         jMenu4.add(jMenu7);
+
+        jMenu10.setText("Use Case Points");
+
+        jMenuItem9.setText("Enter UCP Data");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu10.add(jMenuItem9);
+
+        jMenu4.add(jMenu10);
 
         jMenuBar1.add(jMenu4);
 
@@ -360,8 +373,13 @@ public class MainFrame extends javax.swing.JFrame {
                 java.util.Properties paneProps = fp.toProperties();
                 putAllWithPrefix(props, "pane." + i + ".", paneProps);
 
+            } else if (c instanceof UseCasePointsPanel ucp) {
+                props.setProperty("pane." + i + ".type", "ucp");
+
+                java.util.Properties paneProps = ucp.toProperties();
+                putAllWithPrefix(props, "pane." + i + ".", paneProps);
+
             } else {
-                // unknown pane type (future metrics)
                 props.setProperty("pane." + i + ".type", "unknown");
             }
         }
@@ -423,6 +441,15 @@ public class MainFrame extends javax.swing.JFrame {
                 fp.loadFromProperties(paneProps);
 
                 jTabbedPane1.addTab(title, fp);
+
+            } else if ("ucp".equals(type)) {
+                UseCasePointsPanel ucp = new UseCasePointsPanel();
+
+                java.util.Properties paneProps = subProperties(props, "pane." + i + ".");
+                ucp.loadFromProperties(paneProps);
+
+                jTabbedPane1.addTab(title, ucp);
+
             } else {
                 // future: other metric pane types
             }
@@ -443,12 +470,43 @@ public class MainFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        String name = javax.swing.JOptionPane.showInputDialog(
+                this,
+                "Enter name for the Use Case Points pane:",
+                "New Use Case Points Pane",
+                javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (name == null) {
+            return;
+        }
+
+        name = name.trim();
+
+        if (name.isEmpty()) {
+            name = "Use Case Points";
+        }
+
+        String base = name;
+        int suffix = 2;
+        while (tabTitleExists(name)) {
+            name = base + " (" + suffix + ")";
+            suffix++;
+        }
+
+        UseCasePointsPanel ucp = new UseCasePointsPanel();
+        jTabbedPane1.addTab(name, ucp);
+        jTabbedPane1.setSelectedComponent(ucp);
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -462,7 +520,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
+    private javax.swing.JMenu jMenu8;
+    private javax.swing.JMenuItem jMenuItem7;
 }

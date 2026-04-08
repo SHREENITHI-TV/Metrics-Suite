@@ -694,46 +694,26 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // If no FP input data entered, ignore Compute FP per script
+// If no FP input data entered, ignore Compute FP per script
         if (allCountFieldsEmpty()) {
             return;
         }
+        if (!vafConfirmed) {
+            int choice = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "You haven't confirmed Value Adjustments (VAF) yet.\nOpen the VAF dialog now?",
+                    "VAF required",
+                    javax.swing.JOptionPane.YES_NO_OPTION
+            );
 
-        try {
-            // Always refresh totals first
-            recomputeAllTotals();
-
-            // If VAF has not been confirmed yet, ask to use current total first
-            if (!vafConfirmed) {
-                int proceedChoice = javax.swing.JOptionPane.showConfirmDialog(
-                        this,
-                        "The current VAF total is set to " + vafSum + ".\nDo you want to proceed with this value?",
-                        "Confirm VAF Total",
-                        javax.swing.JOptionPane.YES_NO_OPTION
-                );
-
-                if (proceedChoice == javax.swing.JOptionPane.YES_OPTION) {
-                    vafConfirmed = true;
-                } else {
-                    int openChoice = javax.swing.JOptionPane.showConfirmDialog(
-                            this,
-                            "Do you want to open the VAF dialog and set it now?",
-                            "Open VAF Dialog",
-                            javax.swing.JOptionPane.YES_NO_OPTION
-                    );
-
-                    if (openChoice == javax.swing.JOptionPane.YES_OPTION) {
-                        jButton2ActionPerformed(null);   // opens VAF dialog and saves values if approved
-
-                        // If user closed/cancelled the VAF dialog, stop here
-                        if (!vafConfirmed) {
-                            return;
-                        }
-                    } else {
-                        return;
-                    }
-                }
+            if (choice == javax.swing.JOptionPane.YES_OPTION) {
+                jButton2ActionPerformed(null); // opens Value Adjustments (your VAF button handler)
             }
+            return;
+        }
+        try {
+            // Ensure totals/Total Count are up-to-date
+            recomputeAllTotals();
 
             // Read Total Count from the field recomputeAllTotals already sets
             int totalCount = 0;
@@ -742,11 +722,13 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
                 totalCount = Integer.parseInt(tc);
             }
 
-            // Compute VAF and FP
-            double vaf = 0.65 + 0.01 * vafSum;
+            // VAF and FP
+            double vaf = 0.65 + 0.01 * vafSum;     // vafSum must already be maintained elsewhere
             double fp = totalCount * vaf;
 
-            // Show FP result
+            // Display results (use your actual output fields)
+            // If you have a VAF field, set it too:
+            // jTextField12.setText(String.format("%,.2f", vaf));  // example
             jTextField13.setText(String.format("%,.2f", fp));
 
         } catch (NumberFormatException ex) {
@@ -795,7 +777,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             return;
         }
 
-        int fp = (int) fpDouble;   // truncate decimal part
+         int fp = (int) fpDouble;   // truncate decimal part
         String lang = (currentLanguage == null || currentLanguage.isBlank()) ? "None" : currentLanguage;
         int loc = locPerFp(lang);
         if (loc < 0) {
