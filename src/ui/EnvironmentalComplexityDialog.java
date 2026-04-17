@@ -81,10 +81,10 @@ public class EnvironmentalComplexityDialog extends JDialog {
             grid.add(cb);
         }
 
-        JButton ok = new JButton("OK");
+        JButton done = new JButton("Done");
         JButton cancel = new JButton("Cancel");
 
-        ok.addActionListener(e -> {
+        done.addActionListener(e -> {
             weightedSum = 0.0;
 
             for (int i = 0; i < boxes.length; i++) {
@@ -104,7 +104,7 @@ public class EnvironmentalComplexityDialog extends JDialog {
         });
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(ok);
+        buttons.add(done);
         buttons.add(cancel);
 
         JLabel header = new JLabel(

@@ -91,7 +91,7 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         jButton1.setText("Calculate Technical Complexity Factor");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
-        jButton2.setText("Calculate Environmental Complexity Factor");
+        jButton2.setText("Calculate Environment Complexity Factor");
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
         jTextFieldUUCP.setEditable(false);
@@ -101,6 +101,11 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         jLabel11.setText("Enter Productivity Factor");
         jLabel11.setToolTipText("PF is the ratio of person-hours per use case as determined from past projects");
 
+        jTextFieldProductivityFactor.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldProductivityFactorFocusLost(evt);
+            }
+        });
         jTextFieldProductivityFactor.addActionListener(this::jTextFieldProductivityFactorActionPerformed);
 
         jTextFieldECF.setEditable(false);
@@ -135,6 +140,24 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         jLabel4.setToolTipText("A human (weight = 3)");
 
         jLabel5.setText("Total UAW");
+
+        jTextActorSimpleCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextActorSimpleCountFocusLost(evt);
+            }
+        });
+
+        jTextActorAverageCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextActorAverageCountFocusLost(evt);
+            }
+        });
+
+        jTextActorComplexCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextActorComplexCountFocusLost(evt);
+            }
+        });
 
         jTextFieldUAWTotal.setEditable(false);
 
@@ -225,8 +248,24 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
 
         jLabel9.setText("Total UUCW");
 
+        jTextUseCaseSimpleCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextUseCaseSimpleCountFocusLost(evt);
+            }
+        });
+
+        jTextUseCaseAverageCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextUseCaseAverageCountFocusLost(evt);
+            }
+        });
         jTextUseCaseAverageCount.addActionListener(this::jTextUseCaseAverageCountActionPerformed);
 
+        jTextUseCaseComplexCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextUseCaseComplexCountFocusLost(evt);
+            }
+        });
         jTextUseCaseComplexCount.addActionListener(this::jTextUseCaseComplexCountActionPerformed);
 
         jTextFieldUUCWTotal.setEditable(false);
@@ -314,8 +353,18 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
 
         jLabel12.setText("LOC per PM");
 
+        jTextFieldLOCPerUCP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldLOCPerUCPFocusLost(evt);
+            }
+        });
         jTextFieldLOCPerUCP.addActionListener(this::jTextFieldLOCPerUCPActionPerformed);
 
+        jTextFieldLOCPerPM.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldLOCPerPMFocusLost(evt);
+            }
+        });
         jTextFieldLOCPerPM.addActionListener(this::jTextFieldLOCPerPMActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -587,6 +636,43 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         jTextFieldUUCWTotal.setText(String.valueOf(uucw));
         jTextFieldUUCP.setText(String.valueOf(uucp));
     }
+    
+    private void validateNonNegative(javax.swing.JTextField tf) 
+    {
+        String text = tf.getText().trim();
+
+        if (text.isEmpty()) {
+            return;
+        }
+
+        try {
+            double value = Double.parseDouble(text);
+
+            if (value < 0) {
+                throw new NumberFormatException();
+            }
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Enter valid non-negative numbers.",
+                    "Invalid input",
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+
+            if (tf == jTextFieldProductivityFactor) {
+                tf.setText("20");
+            } else if (tf == jTextFieldLOCPerPM) {
+                tf.setText("700");
+            } else if (tf == jTextFieldLOCPerUCP) {
+                tf.setText("100");
+            } else {
+                tf.setText("");
+            }
+
+            tf.requestFocus();
+        }
+    }
 
     private void jTextActorSimpleTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextActorSimpleTotalActionPerformed
         // TODO add your handling code here:
@@ -715,6 +801,42 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         }
 
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextActorSimpleCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorSimpleCountFocusLost
+        validateNonNegative(jTextActorSimpleCount);
+    }//GEN-LAST:event_jTextActorSimpleCountFocusLost
+
+    private void jTextActorAverageCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorAverageCountFocusLost
+        validateNonNegative(jTextActorAverageCount);
+    }//GEN-LAST:event_jTextActorAverageCountFocusLost
+
+    private void jTextActorComplexCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorComplexCountFocusLost
+        validateNonNegative(jTextActorComplexCount);
+    }//GEN-LAST:event_jTextActorComplexCountFocusLost
+
+    private void jTextUseCaseSimpleCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseSimpleCountFocusLost
+        validateNonNegative(jTextUseCaseSimpleCount);
+    }//GEN-LAST:event_jTextUseCaseSimpleCountFocusLost
+
+    private void jTextUseCaseAverageCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseAverageCountFocusLost
+        validateNonNegative(jTextUseCaseAverageCount);
+    }//GEN-LAST:event_jTextUseCaseAverageCountFocusLost
+
+    private void jTextUseCaseComplexCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseComplexCountFocusLost
+        validateNonNegative(jTextUseCaseComplexCount);
+    }//GEN-LAST:event_jTextUseCaseComplexCountFocusLost
+
+    private void jTextFieldProductivityFactorFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldProductivityFactorFocusLost
+        validateNonNegative(jTextFieldProductivityFactor);
+    }//GEN-LAST:event_jTextFieldProductivityFactorFocusLost
+
+    private void jTextFieldLOCPerUCPFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerUCPFocusLost
+        validateNonNegative(jTextFieldLOCPerUCP);
+    }//GEN-LAST:event_jTextFieldLOCPerUCPFocusLost
+
+    private void jTextFieldLOCPerPMFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerPMFocusLost
+        validateNonNegative(jTextFieldLOCPerPM);
+    }//GEN-LAST:event_jTextFieldLOCPerPMFocusLost
 
     public java.util.Properties toProperties() {
         java.util.Properties p = new java.util.Properties();

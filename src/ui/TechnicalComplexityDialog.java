@@ -85,17 +85,11 @@ public class TechnicalComplexityDialog extends JDialog{
             grid.add(cb);
         }
 
-        JButton ok = new JButton("OK");
+        JButton done = new JButton("Done");
         JButton cancel = new JButton("Cancel");
 
-        ok.addActionListener(e -> {
-            weightedSum = 0;
-
-            for (int i = 0; i < boxes.length; i++) {
-                int rating = (Integer) boxes[i].getSelectedItem();
-                weightedSum += (int) Math.round(rating * WEIGHTS[i]);
-            }
-
+        done.addActionListener(e -> {
+           
             double exactSum = 0.0;
             for (int i = 0; i < boxes.length; i++) {
                 int rating = (Integer) boxes[i].getSelectedItem();
@@ -114,7 +108,7 @@ public class TechnicalComplexityDialog extends JDialog{
         });
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(ok);
+        buttons.add(done);
         buttons.add(cancel);
 
         JLabel header = new JLabel(

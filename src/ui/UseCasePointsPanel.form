@@ -150,7 +150,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Calculate Environmental Complexity Factor"/>
+        <Property name="text" type="java.lang.String" value="Calculate Environment Complexity Factor"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
@@ -173,6 +173,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldProductivityFactor">
       <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextFieldProductivityFactorFocusLost"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldProductivityFactorActionPerformed"/>
       </Events>
     </Component>
@@ -343,10 +344,19 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextActorSimpleCount">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextActorSimpleCountFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextActorAverageCount">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextActorAverageCountFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextActorComplexCount">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextActorComplexCountFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextFieldUAWTotal">
           <Properties>
@@ -493,14 +503,19 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextUseCaseSimpleCount">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextUseCaseSimpleCountFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextUseCaseAverageCount">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextUseCaseAverageCountFocusLost"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextUseCaseAverageCountActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextUseCaseComplexCount">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextUseCaseComplexCountFocusLost"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextUseCaseComplexCountActionPerformed"/>
           </Events>
         </Component>
@@ -606,11 +621,13 @@
         </Component>
         <Component class="javax.swing.JTextField" name="jTextFieldLOCPerUCP">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextFieldLOCPerUCPFocusLost"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldLOCPerUCPActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextFieldLOCPerPM">
           <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextFieldLOCPerPMFocusLost"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldLOCPerPMActionPerformed"/>
           </Events>
         </Component>
