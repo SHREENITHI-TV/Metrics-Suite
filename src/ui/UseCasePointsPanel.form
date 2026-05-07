@@ -652,11 +652,11 @@
                       <Component id="jLabel16" alignment="1" max="32767" attributes="0"/>
                       <Component id="jLabel15" alignment="1" pref="96" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="32767" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jTextFieldEstimatedHours" alignment="1" min="-2" pref="64" max="-2" attributes="0"/>
-                      <Component id="jTextFieldEstimatedLOC" alignment="1" min="-2" pref="64" max="-2" attributes="0"/>
-                      <Component id="jTextFieldEstimatedPM" alignment="1" min="-2" pref="64" max="-2" attributes="0"/>
+                      <Component id="jTextFieldEstimatedPM" alignment="1" pref="79" max="32767" attributes="0"/>
+                      <Component id="jTextFieldEstimatedHours" alignment="1" max="32767" attributes="0"/>
+                      <Component id="jTextFieldEstimatedLOC" alignment="1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>

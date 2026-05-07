@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package ui;
-
+import javax.swing.SwingUtilities;
 /**
  *
  * @author bharg
@@ -22,6 +22,13 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
     private double currentTCF = 0.60;
     private int[] ecfValues = new int[8];
     private double currentECF = 1.40;
+    
+    private void notifyDirty() {
+    java.awt.Window window = SwingUtilities.getWindowAncestor(this);
+    if (window instanceof MainFrame frame) {
+        frame.markDirty();
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -424,11 +431,11 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
                     .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldEstimatedHours, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldEstimatedLOC, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldEstimatedPM, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldEstimatedPM, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                    .addComponent(jTextFieldEstimatedHours, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextFieldEstimatedLOC, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -636,9 +643,8 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         jTextFieldUUCWTotal.setText(String.valueOf(uucw));
         jTextFieldUUCP.setText(String.valueOf(uucp));
     }
-    
-    private void validateNonNegative(javax.swing.JTextField tf) 
-    {
+
+    private void validateNonNegative(javax.swing.JTextField tf) {
         String text = tf.getText().trim();
 
         if (text.isEmpty()) {
@@ -694,6 +700,7 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
         currentTCF = dlg.getTCF();
 
         jTextFieldTCF.setText(String.format("%.2f", currentTCF));
+        notifyDirty();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextUseCaseAverageCountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextUseCaseAverageCountActionPerformed
@@ -726,6 +733,7 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
 
     private void jTextFieldProductivityFactorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldProductivityFactorActionPerformed
         // TODO add your handling code here:
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldProductivityFactorActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -742,9 +750,11 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
 
         ecfValues = dlg.getValues();
         currentECF = dlg.getECF();
+        double truncatedECF = Math.floor(currentECF * 100) / 100.0;
+        jTextFieldECF.setText(String.format("%.2f", truncatedECF));
 
-        jTextFieldECF.setText(String.format("%.2f", currentECF));
-
+        //jTextFieldECF.setText(String.format("%.2f", currentECF));
+notifyDirty();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButtonComputeUCPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonComputeUCPActionPerformed
@@ -777,14 +787,17 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
                     javax.swing.JOptionPane.ERROR_MESSAGE
             );
         }
+        notifyDirty();
     }//GEN-LAST:event_jButtonComputeUCPActionPerformed
 
     private void jTextFieldLOCPerUCPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerUCPActionPerformed
         // TODO add your handling code here:
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldLOCPerUCPActionPerformed
 
     private void jTextFieldLOCPerPMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerPMActionPerformed
         // TODO add your handling code here:
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldLOCPerPMActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -799,43 +812,52 @@ public class UseCasePointsPanel extends javax.swing.JPanel {
                     javax.swing.JOptionPane.ERROR_MESSAGE
             );
         }
-
+notifyDirty();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextActorSimpleCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorSimpleCountFocusLost
         validateNonNegative(jTextActorSimpleCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextActorSimpleCountFocusLost
 
     private void jTextActorAverageCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorAverageCountFocusLost
         validateNonNegative(jTextActorAverageCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextActorAverageCountFocusLost
 
     private void jTextActorComplexCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextActorComplexCountFocusLost
         validateNonNegative(jTextActorComplexCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextActorComplexCountFocusLost
 
     private void jTextUseCaseSimpleCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseSimpleCountFocusLost
         validateNonNegative(jTextUseCaseSimpleCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextUseCaseSimpleCountFocusLost
 
     private void jTextUseCaseAverageCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseAverageCountFocusLost
         validateNonNegative(jTextUseCaseAverageCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextUseCaseAverageCountFocusLost
 
     private void jTextUseCaseComplexCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextUseCaseComplexCountFocusLost
         validateNonNegative(jTextUseCaseComplexCount);
+        notifyDirty();
     }//GEN-LAST:event_jTextUseCaseComplexCountFocusLost
 
     private void jTextFieldProductivityFactorFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldProductivityFactorFocusLost
         validateNonNegative(jTextFieldProductivityFactor);
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldProductivityFactorFocusLost
 
     private void jTextFieldLOCPerUCPFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerUCPFocusLost
         validateNonNegative(jTextFieldLOCPerUCP);
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldLOCPerUCPFocusLost
 
     private void jTextFieldLOCPerPMFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldLOCPerPMFocusLost
         validateNonNegative(jTextFieldLOCPerPM);
+        notifyDirty();
     }//GEN-LAST:event_jTextFieldLOCPerPMFocusLost
 
     public java.util.Properties toProperties() {

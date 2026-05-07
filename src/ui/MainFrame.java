@@ -14,13 +14,37 @@ public class MainFrame extends javax.swing.JFrame {
     private String creatorName = null;
     private String projectComments = null;
     private String selectedLanguage = "None";
+    private boolean dirty = false;
+
+    private static class ClosedTabState {
+
+        String title;
+        String type;
+        java.util.Properties props;
+
+        ClosedTabState(String title, String type, java.util.Properties props) {
+            this.title = title;
+            this.type = type;
+            this.props = props;
+        }
+    }
+
+    private final java.util.List<ClosedTabState> closedTabs = new java.util.ArrayList<>();
 
     //Project Title Name 
     private void updateTitleBar() {
+        String baseTitle;
+
         if (projectName == null || projectName.isBlank()) {
-            setTitle("CECS 544 Metrics Suite");
+            baseTitle = "CECS 544 Metrics Suite";
         } else {
-            setTitle("CECS 544 Metrics Suite - " + projectName);
+            baseTitle = "CECS 544 Metrics Suite - " + projectName;
+        }
+
+        if (dirty) {
+            setTitle(baseTitle + " *");
+        } else {
+            setTitle(baseTitle);
         }
     }
 
@@ -64,10 +88,174 @@ public class MainFrame extends javax.swing.JFrame {
         return out;
     }
 
+    private void updateMetricsMenuState() {
+        boolean smiOpen = hasOpenPanelType("smi");
+
+        // Still only one SMI allowed open at a time
+        jMenuItem8.setEnabled(hasProject() && !smiOpen);
+
+        // Reopen any closed tab
+        jMenuItem10.setEnabled(hasProject() && hasClosedTabs());
+
+        // Allow closing any currently selected supported tab
+        int index = jTabbedPane1.getSelectedIndex();
+        if (index < 0) {
+            jMenuItem11.setEnabled(false);
+        } else {
+            String type = getPanelType(jTabbedPane1.getComponentAt(index));
+            jMenuItem11.setEnabled(hasProject() && !"unknown".equals(type));
+        }
+    }
+
+    private boolean hasOpenPanelType(String type) {
+        for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
+            java.awt.Component c = jTabbedPane1.getComponentAt(i);
+            if (type.equals(getPanelType(c))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getPanelType(java.awt.Component c) {
+        if (c instanceof FunctionPointsPanel) {
+            return "fp";
+        }
+        if (c instanceof UseCasePointsPanel) {
+            return "ucp";
+        }
+        if (c instanceof SMIPanel) {
+            return "smi";
+        }
+        return "unknown";
+    }
+
+    private java.util.Properties getPanelProperties(java.awt.Component c) {
+        if (c instanceof FunctionPointsPanel fp) {
+            return fp.toProperties();
+        }
+        if (c instanceof UseCasePointsPanel ucp) {
+            return ucp.toProperties();
+        }
+        if (c instanceof SMIPanel smi) {
+            return smi.toProperties();
+        }
+        return new java.util.Properties();
+    }
+
+    private java.awt.Component buildPanelFromType(String type, java.util.Properties props) {
+        switch (type) {
+            case "fp" -> {
+                FunctionPointsPanel fp = new FunctionPointsPanel();
+                fp.loadFromProperties(props);
+                return fp;
+            }
+            case "ucp" -> {
+                UseCasePointsPanel ucp = new UseCasePointsPanel();
+                ucp.loadFromProperties(props);
+                return ucp;
+            }
+            case "smi" -> {
+                SMIPanel smi = new SMIPanel();
+                smi.loadFromProperties(props);
+                return smi;
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+    private boolean hasClosedTabs() {
+        return !closedTabs.isEmpty();
+    }
+
+    //diable metircs before creating a project
+    private boolean hasProject() {
+        return projectName != null && !projectName.isBlank();
+    }
+
+    private void updateMetricsAvailability() {
+        boolean enabled = hasProject();
+        jMenu4.setEnabled(enabled);
+    }
+
+    public void markDirty() {
+        dirty = true;
+        updateTitleBar();
+    }
+
+    private void markClean() {
+        dirty = false;
+        updateTitleBar();
+    }
+
+    private void clearProjectAfterDiscard() {
+        projectName = null;
+        productName = null;
+        creatorName = null;
+        projectComments = null;
+        selectedLanguage = "None";
+
+        jTabbedPane1.removeAll();
+        closedTabs.clear();
+
+        markClean();
+        updateMetricsAvailability();
+        updateMetricsMenuState();
+    }
+
+    private boolean confirmDiscardOrSave() {
+        return confirmDiscardOrSave(false);
+    }
+
+    private boolean confirmDiscardOrSave(boolean clearOnDiscard) {
+        if (!hasProject() || !dirty) {
+            return true;
+        }
+
+        Object[] options = {"Save", "Discard Changes", "Cancel"};
+
+        int choice = javax.swing.JOptionPane.showOptionDialog(
+                this,
+                "You have unsaved changes.",
+                "Unsaved Changes",
+                javax.swing.JOptionPane.YES_NO_CANCEL_OPTION,
+                javax.swing.JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == 0) {
+            jMenuItem3ActionPerformed(null); // Save
+            return !dirty; // true only if save succeeded
+        } else if (choice == 1) {
+            if (clearOnDiscard) {
+                clearProjectAfterDiscard();
+            }
+            return true; // discard
+        } else {
+            return false; // cancel
+        }
+    }
+
     public MainFrame() {
         initComponents();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (confirmDiscardOrSave()) {
+                    dispose();
+                    System.exit(0);
+                }
+            }
+        });
         jMenu5.setVisible(false);
         updateTitleBar();
+        updateMetricsAvailability();
+        updateMetricsMenuState();
+        jTabbedPane1.addChangeListener(e -> updateMetricsMenuState());
     }
 
     /**
@@ -88,6 +276,8 @@ public class MainFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem10 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -95,10 +285,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("CECS 544 Metrics Suite");
 
         jTabbedPane1.setName("mainTabbedPane"); // NOI18N
@@ -146,6 +337,23 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
+
+        jMenuItem10.setText("Reopen Closed Tab");
+        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem10ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem10);
+
+        jMenuItem11.setText("Close Current Tab");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem11);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Preferences");
@@ -161,6 +369,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Metrics");
+        jMenu4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu4ActionPerformed(evt);
+            }
+        });
 
         jMenu7.setText("Function Points");
 
@@ -186,6 +399,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu4.add(jMenu10);
 
+        jMenuItem8.setText("Software Maturity Index");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem8);
+
         jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Project Code");
@@ -201,13 +422,13 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 100, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
                 .addContainerGap())
@@ -218,7 +439,10 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
+        // New Project
+        if (!confirmDiscardOrSave(true)) {
+            return;
+        }
         NewProjectJDialog dlg = new NewProjectJDialog(this, true);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
@@ -235,9 +459,16 @@ public class MainFrame extends javax.swing.JFrame {
 
 // Clear ALL panes/tabs for a truly new project
         jTabbedPane1.removeAll();
+        closedTabs.clear();
 
 // Update window title
         updateTitleBar();
+//update metrics
+        updateMetricsAvailability();
+        //state      
+        updateMetricsMenuState();
+//Changes made
+        markDirty();
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -248,12 +479,32 @@ public class MainFrame extends javax.swing.JFrame {
 
         String chose = dlg.getChosenLanguage();
         if (chose != null) {
+
+            String oldLanguage = selectedLanguage;   // ← ADD THIS LINE
+
             setSelectedLanguage(chose);
+
+            // update all open FP panels
+            for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
+                java.awt.Component c = jTabbedPane1.getComponentAt(i);
+                if (c instanceof FunctionPointsPanel fp) {
+                    fp.setCurrentLanguage(selectedLanguage);
+                }
+            }
+
+            // mark dirty ONLY if language actually changed
+            if (!java.util.Objects.equals(oldLanguage, selectedLanguage)) {
+                markDirty();
+            }
         }
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
+        if (!hasProject()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Create a project first.");
+            return;
+        }
         String name = javax.swing.JOptionPane.showInputDialog(
                 this,
                 "Enter name for the Function Points pane:",
@@ -286,6 +537,7 @@ public class MainFrame extends javax.swing.JFrame {
         fp.setCurrentLanguage(selectedLanguage);
         jTabbedPane1.addTab(name, fp);
         jTabbedPane1.setSelectedComponent(fp);
+        markDirty();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -360,39 +612,60 @@ public class MainFrame extends javax.swing.JFrame {
         // ---- panes (4.35) ----
         int paneCount = jTabbedPane1.getTabCount();
         props.setProperty("panes.count", String.valueOf(paneCount));
-
         for (int i = 0; i < paneCount; i++) {
             java.awt.Component c = jTabbedPane1.getComponentAt(i);
             String title = jTabbedPane1.getTitleAt(i);
 
             props.setProperty("pane." + i + ".title", title);
 
-            if (c instanceof FunctionPointsPanel fp) {
-                props.setProperty("pane." + i + ".type", "fp");
+            switch (c) {
+                case FunctionPointsPanel fp -> {
+                    props.setProperty("pane." + i + ".type", "fp");
 
-                java.util.Properties paneProps = fp.toProperties();
-                putAllWithPrefix(props, "pane." + i + ".", paneProps);
+                    java.util.Properties paneProps = fp.toProperties();
+                    putAllWithPrefix(props, "pane." + i + ".", paneProps);
 
-            } else if (c instanceof UseCasePointsPanel ucp) {
-                props.setProperty("pane." + i + ".type", "ucp");
+                }
+                case UseCasePointsPanel ucp -> {
+                    props.setProperty("pane." + i + ".type", "ucp");
 
-                java.util.Properties paneProps = ucp.toProperties();
-                putAllWithPrefix(props, "pane." + i + ".", paneProps);
+                    java.util.Properties paneProps = ucp.toProperties();
+                    putAllWithPrefix(props, "pane." + i + ".", paneProps);
 
-            } else {
-                props.setProperty("pane." + i + ".type", "unknown");
+                }
+                case SMIPanel smi -> {
+                    props.setProperty("pane." + i + ".type", "smi");
+
+                    java.util.Properties paneProps = smi.toProperties();
+                    putAllWithPrefix(props, "pane." + i + ".", paneProps);
+                }
+                default ->
+                    props.setProperty("pane." + i + ".type", "unknown");
             }
         }
+        props.setProperty("closedTabs.count", String.valueOf(closedTabs.size()));
 
+        for (int i = 0; i < closedTabs.size(); i++) {
+            ClosedTabState state = closedTabs.get(i);
+            props.setProperty("closed." + i + ".title", state.title);
+            props.setProperty("closed." + i + ".type", state.type);
+            putAllWithPrefix(props, "closed." + i + ".", state.props);
+        }
         try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
             props.store(out, "CECS 544 Metrics Suite Project");
             javax.swing.JOptionPane.showMessageDialog(this, "Saved: " + file.getName());
+            markClean();
         } catch (Exception ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "Save failed: " + ex.getMessage());
         }
+
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        //Open Project
+        if (!confirmDiscardOrSave(true)) {
+            return;
+        }
         javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
         chooser.setDialogTitle("Open Project");
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
@@ -419,9 +692,12 @@ public class MainFrame extends javax.swing.JFrame {
         projectComments = props.getProperty("project.comments", "");
         selectedLanguage = props.getProperty("project.language", "None");
         updateTitleBar();
+        updateMetricsAvailability();
+        markClean();
 
         // ---- clear current tabs ----
         jTabbedPane1.removeAll();
+        closedTabs.clear();
 
         // ---- load panes ----
         int paneCount = 0;
@@ -450,14 +726,33 @@ public class MainFrame extends javax.swing.JFrame {
 
                 jTabbedPane1.addTab(title, ucp);
 
-            } else {
-                // future: other metric pane types
+            } else if ("smi".equals(type)) {
+                SMIPanel smi = new SMIPanel();
+
+                java.util.Properties paneProps = subProperties(props, "pane." + i + ".");
+                smi.loadFromProperties(paneProps);
+
+                jTabbedPane1.addTab(title, smi);
+
             }
         }
+        int closedCount = 0;
+        try {
+            closedCount = Integer.parseInt(props.getProperty("closedTabs.count", "0"));
+        } catch (NumberFormatException ignored) {
+        }
 
+        for (int i = 0; i < closedCount; i++) {
+            String title = props.getProperty("closed." + i + ".title", "Closed Tab");
+            String type = props.getProperty("closed." + i + ".type", "unknown");
+            java.util.Properties paneProps = subProperties(props, "closed." + i + ".");
+            closedTabs.add(new ClosedTabState(title, type, paneProps));
+        }
+        updateMetricsMenuState();
         if (jTabbedPane1.getTabCount() > 0) {
             jTabbedPane1.setSelectedIndex(0);
         }
+
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
@@ -465,12 +760,16 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenu1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        // TODO add your handling code here:
-
-        System.exit(0);
+        if (confirmDiscardOrSave()) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        if (!hasProject()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Create a project first.");
+            return;
+        }
         String name = javax.swing.JOptionPane.showInputDialog(
                 this,
                 "Enter name for the Use Case Points pane:",
@@ -498,7 +797,100 @@ public class MainFrame extends javax.swing.JFrame {
         UseCasePointsPanel ucp = new UseCasePointsPanel();
         jTabbedPane1.addTab(name, ucp);
         jTabbedPane1.setSelectedComponent(ucp);
+        markDirty();
     }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jMenu4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu4ActionPerformed
+
+    }//GEN-LAST:event_jMenu4ActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        if (!hasProject()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Create a project first.");
+            return;
+        }
+
+        if (hasOpenPanelType("smi")) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Only one Software Maturity Index panel is allowed per project.");
+            return;
+        }
+
+        SMIPanel smiPanel = new SMIPanel();
+
+        jTabbedPane1.addTab("Software Maturity Index", smiPanel);
+        jTabbedPane1.setSelectedComponent(smiPanel);
+        markDirty();
+        updateMetricsMenuState();
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+        if (!hasProject()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Create or open a project first.");
+            return;
+        }
+
+        if (closedTabs.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No closed tab is available to reopen.");
+            return;
+        }
+
+        ClosedTabState state = closedTabs.remove(closedTabs.size() - 1);
+
+        // Keep the one-SMI-open rule
+        if ("smi".equals(state.type) && hasOpenPanelType("smi")) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Only one Software Maturity Index panel is allowed per project.");
+            closedTabs.add(state); // put it back
+            return;
+        }
+
+        java.awt.Component panel = buildPanelFromType(state.type, state.props);
+        if (panel == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Unable to reopen this tab.");
+            return;
+        }
+
+        String reopenTitle = state.title;
+        String base = reopenTitle;
+        int suffix = 2;
+        while (tabTitleExists(reopenTitle)) {
+            reopenTitle = base + " (" + suffix + ")";
+            suffix++;
+        }
+
+        jTabbedPane1.addTab(reopenTitle, panel);
+        jTabbedPane1.setSelectedComponent(panel);
+
+        markDirty();
+        updateMetricsMenuState();
+    }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+
+        int index = jTabbedPane1.getSelectedIndex();
+        if (index < 0) {
+            return;
+        }
+
+        java.awt.Component c = jTabbedPane1.getComponentAt(index);
+        String title = jTabbedPane1.getTitleAt(index);
+        String type = getPanelType(c);
+
+        if ("unknown".equals(type)) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "This tab type cannot be closed and reopened.");
+            return;
+        }
+
+        // Still prevent more than one open SMI, but closing it is fine
+        java.util.Properties props = getPanelProperties(c);
+        closedTabs.add(new ClosedTabState(title, type, props));
+
+        jTabbedPane1.removeTabAt(index);
+        markDirty();
+        updateMetricsMenuState();
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -515,15 +907,16 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
-    private javax.swing.JMenu jMenu8;
-    private javax.swing.JMenuItem jMenuItem7;
 }

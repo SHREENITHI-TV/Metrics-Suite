@@ -4,6 +4,8 @@
  */
 package ui;
 
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author shree
@@ -167,6 +169,13 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             default ->
                 -1;
         };
+    }
+
+    private void notifyDirty() {
+        java.awt.Window window = SwingUtilities.getWindowAncestor(this);
+        if (window instanceof MainFrame frame) {
+            frame.markDirty();
+        }
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -686,6 +695,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
         String picked = dlg.getChosenLanguage();
         if (picked != null) {
             setCurrentLanguage(picked);     // fallback
+            notifyDirty();
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -730,6 +740,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             // If you have a VAF field, set it too:
             // jTextField12.setText(String.format("%,.2f", vaf));  // example
             jTextField13.setText(String.format("%,.2f", fp));
+            notifyDirty();
 
         } catch (NumberFormatException ex) {
             javax.swing.JOptionPane.showMessageDialog(
@@ -760,6 +771,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
 
         // Show VAF sum in the UI (pick the correct text field for your layout)
         jTextField14.setText(String.valueOf(vafSum));
+        notifyDirty();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -777,7 +789,7 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
             return;
         }
 
-         int fp = (int) fpDouble;   // truncate decimal part
+        int fp = (int) fpDouble;   // truncate decimal part
         String lang = (currentLanguage == null || currentLanguage.isBlank()) ? "None" : currentLanguage;
         int loc = locPerFp(lang);
         if (loc < 0) {
@@ -789,88 +801,107 @@ public class FunctionPointsPanel extends javax.swing.JPanel {
 
         // Show code size in jTextField15
         jTextField15.setText(String.format("%,.0f", size));
+        notifyDirty();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField1FocusLost
         safeRecompute(true);
+        notifyDirty();
     }//GEN-LAST:event_jTextField1FocusLost
 
     private void jTextField2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField2FocusLost
         safeRecompute(true);
+        notifyDirty();
     }//GEN-LAST:event_jTextField2FocusLost
 
     private void jTextField3FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField3FocusLost
         safeRecompute(true);
+        notifyDirty();
     }//GEN-LAST:event_jTextField3FocusLost
 
     private void jTextField4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField4FocusLost
         safeRecompute(true);
+        notifyDirty();
     }//GEN-LAST:event_jTextField4FocusLost
 
     private void jTextField5FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField5FocusLost
         safeRecompute(true);
+        notifyDirty();
     }//GEN-LAST:event_jTextField5FocusLost
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
         safeRecompute(false);
-
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     private void jRadioButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton5ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton5ActionPerformed
 
     private void jRadioButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton6ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton6ActionPerformed
 
     private void jRadioButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton13ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton13ActionPerformed
 
     private void jRadioButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton8ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton8ActionPerformed
 
     private void jRadioButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton9ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton9ActionPerformed
 
     private void jRadioButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton7ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton7ActionPerformed
 
     private void jRadioButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton11ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton11ActionPerformed
 
     private void jRadioButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton12ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton12ActionPerformed
 
     private void jRadioButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton10ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton10ActionPerformed
 
     private void jRadioButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton14ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton14ActionPerformed
 
     private void jRadioButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton15ActionPerformed
         safeRecompute(false);
+        notifyDirty();
     }//GEN-LAST:event_jRadioButton15ActionPerformed
 
     private static int parseNonNegInt(String s) {

@@ -15,24 +15,27 @@ public class LanguageDialog extends javax.swing.JDialog {
      */
     private String chosenLanguage = null;
     private boolean approved = false;
+    private String pendingLanguage = null;
 
     public boolean isApproved() {
         return approved;
     }
 
     public String getChosenLanguage() {
-        return chosenLanguage;
+        return approved ? chosenLanguage : null;
     }
 
     public LanguageDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        approved = false;
     }
 
     public LanguageDialog(java.awt.Frame parent, boolean modal, String currentLanguage) {
         super(parent, modal);
         initComponents();
         preselect(currentLanguage);
+        approved = false;
     }
 
     private void preselect(String currentLanguage) {
@@ -80,6 +83,7 @@ public class LanguageDialog extends javax.swing.JDialog {
         }
 
         // Ensure chosenLanguage matches the preselected option
+        pendingLanguage = currentLanguage;
         chosenLanguage = currentLanguage;
     }
 
@@ -292,7 +296,7 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox1ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox1.isSelected()) {
-            chosenLanguage = "Assembler";
+            pendingLanguage = "Assembler";
         }
     }//GEN-LAST:event_jCheckBox1ItemStateChanged
 
@@ -303,85 +307,88 @@ public class LanguageDialog extends javax.swing.JDialog {
     private void jCheckBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox2ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox2.isSelected()) {
-            chosenLanguage = "Ada 95";
+            pendingLanguage = "Ada 95";
         }
     }//GEN-LAST:event_jCheckBox2ItemStateChanged
 
     private void jCheckBox3ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox3ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox3.isSelected()) {
-            chosenLanguage = "C";
+            pendingLanguage = "C";
         }
     }//GEN-LAST:event_jCheckBox3ItemStateChanged
 
     private void jCheckBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox4ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox4.isSelected()) {
-            chosenLanguage = "C++";
+            pendingLanguage = "C++";
         }
     }//GEN-LAST:event_jCheckBox4ItemStateChanged
 
     private void jCheckBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox5ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox5.isSelected()) {
-            chosenLanguage = "C#";
+            pendingLanguage = "C#";
         }
     }//GEN-LAST:event_jCheckBox5ItemStateChanged
 
     private void jCheckBox6ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox6ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox6.isSelected()) {
-            chosenLanguage = "COBOL";
+            pendingLanguage = "COBOL";
         }
     }//GEN-LAST:event_jCheckBox6ItemStateChanged
 
     private void jCheckBox7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox7ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox7.isSelected()) {
-            chosenLanguage = "FORTRAN";
+            pendingLanguage = "FORTRAN";
         }
     }//GEN-LAST:event_jCheckBox7ItemStateChanged
 
     private void jCheckBox8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox8ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox8.isSelected()) {
-            chosenLanguage = "HTML";
+            pendingLanguage = "HTML";
         }
     }//GEN-LAST:event_jCheckBox8ItemStateChanged
 
     private void jCheckBox9ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox9ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox9.isSelected()) {
-            chosenLanguage = "Java";
+            pendingLanguage = "Java";
         }
     }//GEN-LAST:event_jCheckBox9ItemStateChanged
 
     private void jCheckBox10ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox10ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox10.isSelected()) {
-            chosenLanguage = "JavaScript";
+            pendingLanguage = "JavaScript";
         }
     }//GEN-LAST:event_jCheckBox10ItemStateChanged
 
     private void jCheckBox11ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox11ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox11.isSelected()) {
-            chosenLanguage = "VBScript";
+            pendingLanguage = "VBScript";
         }
     }//GEN-LAST:event_jCheckBox11ItemStateChanged
 
     private void jCheckBox12ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox12ItemStateChanged
         // TODO add your handling code here:
         if (jCheckBox12.isSelected()) {
-            chosenLanguage = "Visual Basic";
+            pendingLanguage = "Visual Basic";
         }
     }//GEN-LAST:event_jCheckBox12ItemStateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (chosenLanguage == null || chosenLanguage.trim().isEmpty()) {
+
+        if (pendingLanguage == null || pendingLanguage.trim().isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Select a language first.");
             return;
         }
+
+        chosenLanguage = pendingLanguage;
         approved = true;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
