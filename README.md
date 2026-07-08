@@ -102,9 +102,7 @@ Make sure you have:
 
 #### Setup Steps
 
-1. Clone the repository.
-
-`git clone https://github.com/SHREENITHI-TV/Metrics-Suite.git`
+1. Clone the repository.`git clone https://github.com/SHREENITHI-TV/Metrics-Suite.git`
 
 2. Open Apache NetBeans.
 
