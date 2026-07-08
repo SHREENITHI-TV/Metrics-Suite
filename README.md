@@ -4,17 +4,17 @@
 
 ### Java Desktop Application · Software Metrics · Testing & Verification
 
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Swing](https://img.shields.io/badge/Java%20Swing-5382A1?style=for-the-badge)
-![NetBeans](https://img.shields.io/badge/Apache%20NetBeans-1B6AC6?style=for-the-badge&logo=apachenetbeanside&logoColor=white)
-![Testing](https://img.shields.io/badge/Testing%20%26%20Verification-111827?style=for-the-badge)
-![Software Metrics](https://img.shields.io/badge/Software%20Metrics-6A5ACD?style=for-the-badge)
+[![Java](https://img.shields.io/badge/Java-Desktop-orange)](#)
+[![Swing](https://img.shields.io/badge/UI-Java%20Swing-blue)](#)
+[![Metrics](https://img.shields.io/badge/Software-Metrics-purple)](#)
+[![Testing](https://img.shields.io/badge/Testing-Verification-green)](#)
+[![IDE](https://img.shields.io/badge/IDE-Apache%20NetBeans-lightgrey)](#)
 
 </div>
 
 ---
 
-## 🔍 Overview
+### 🔍 Overview
 
 **Metrics Suite** is a Java Swing desktop application for calculating and managing software engineering metrics.
 
@@ -22,7 +22,7 @@ The application supports project-based metric tracking with a GUI workflow for F
 
 ---
 
-## ✨ Key Features
+### ✨ Key Features
 
 | Feature | Description |
 |---|---|
@@ -37,7 +37,7 @@ The application supports project-based metric tracking with a GUI workflow for F
 
 ---
 
-## 🧮 Supported Metrics
+### 🧮 Supported Metrics
 
 | Metric | Purpose |
 |---|---|
@@ -47,7 +47,7 @@ The application supports project-based metric tracking with a GUI workflow for F
 
 ---
 
-## 🛠️ Tech Stack
+### 🛠️ Tech Stack
 
 | Category | Tools / Technologies |
 |---|---|
@@ -60,7 +60,7 @@ The application supports project-based metric tracking with a GUI workflow for F
 
 ---
 
-## 👩‍💻 My Role
+### 👩‍💻 My Role
 
 I worked on this project with a focus on **Java GUI development, metric calculation workflows, testing, and verification**.
 
@@ -75,7 +75,7 @@ My work focused on:
 
 ---
 
-## 🧪 Testing / Verification Focus
+### 🧪 Testing / Verification Focus
 
 | Area Tested | Validation Goal |
 |---|---|
@@ -90,9 +90,9 @@ My work focused on:
 
 ---
 
-## ▶️ How to Run
+### ▶️ How to Run
 
-### Prerequisites
+#### Prerequisites
 
 Make sure you have:
 
@@ -100,7 +100,7 @@ Make sure you have:
 - Apache NetBeans installed
 - Git installed, if cloning from GitHub
 
-### Setup Steps
+#### Setup Steps
 
 1. Clone the repository.
 
@@ -118,7 +118,7 @@ Make sure you have:
 
 ---
 
-## 📁 Repository Structure
+### 📁 Repository Structure
 
 | Folder / File | Purpose |
 |---|---|
@@ -132,7 +132,7 @@ Make sure you have:
 
 ---
 
-## 📌 Project Relevance
+### 📌 Project Relevance
 
 This project demonstrates practical experience with:
 
@@ -147,7 +147,7 @@ This project demonstrates practical experience with:
 
 ---
 
-## 🚀 Future Improvements
+### 🚀 Future Improvements
 
 - Add JUnit tests for metric calculation logic
 - Improve UI styling and layout consistency
@@ -157,6 +157,6 @@ This project demonstrates practical experience with:
 
 <div align="center">
 
-### Built to support software metrics calculation, testing, and verification through a Java desktop application.
+#### Built to support software metrics calculation, testing, and verification through a Java desktop application.
 
 </div>
