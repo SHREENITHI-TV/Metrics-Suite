@@ -15,6 +15,7 @@ public class MainFrame extends javax.swing.JFrame {
     private String projectComments = null;
     private String selectedLanguage = "None";
     private boolean dirty = false;
+    private File currentProjectFile = null;
 
     private static class ClosedTabState {
 
@@ -89,15 +90,12 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void updateMetricsMenuState() {
-        boolean smiOpen = hasOpenPanelType("smi");
+        boolean smiExists = hasOpenPanelType("smi") || hasClosedPanelType("smi");
 
-        // Still only one SMI allowed open at a time
-        jMenuItem8.setEnabled(hasProject() && !smiOpen);
+        jMenuItem8.setEnabled(hasProject() && !smiExists);
 
-        // Reopen any closed tab
         jMenuItem10.setEnabled(hasProject() && hasClosedTabs());
 
-        // Allow closing any currently selected supported tab
         int index = jTabbedPane1.getSelectedIndex();
         if (index < 0) {
             jMenuItem11.setEnabled(false);
@@ -170,6 +168,15 @@ public class MainFrame extends javax.swing.JFrame {
         return !closedTabs.isEmpty();
     }
 
+    private boolean hasClosedPanelType(String type) {
+        for (ClosedTabState state : closedTabs) {
+            if (type.equals(state.type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //diable metircs before creating a project
     private boolean hasProject() {
         return projectName != null && !projectName.isBlank();
@@ -196,6 +203,7 @@ public class MainFrame extends javax.swing.JFrame {
         creatorName = null;
         projectComments = null;
         selectedLanguage = "None";
+        currentProjectFile = null;
 
         jTabbedPane1.removeAll();
         closedTabs.clear();
@@ -229,12 +237,22 @@ public class MainFrame extends javax.swing.JFrame {
 
         if (choice == 0) {
             jMenuItem3ActionPerformed(null); // Save
-            return !dirty; // true only if save succeeded
+
+            if (!dirty) {
+                if (clearOnDiscard) {
+                    clearProjectAfterDiscard();
+                }
+                return true;
+            }
+
+            return false; // save was cancelled or failed
+
         } else if (choice == 1) {
             if (clearOnDiscard) {
                 clearProjectAfterDiscard();
             }
             return true; // discard
+
         } else {
             return false; // cancel
         }
@@ -422,9 +440,10 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -456,6 +475,7 @@ public class MainFrame extends javax.swing.JFrame {
         productName = dlg.getProductName();
         creatorName = dlg.getCreator();
         projectComments = dlg.getComments();
+        currentProjectFile = null;
 
 // Clear ALL panes/tabs for a truly new project
         jTabbedPane1.removeAll();
@@ -547,49 +567,57 @@ public class MainFrame extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Create a project first (File → New).");
             return;
         }
+        File file = currentProjectFile;
+        // If this project has never been saved before, ask where to save it
+        if (file == null) {
+            javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+            chooser.setDialogTitle("Save Project");
+            chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
 
-        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
-        chooser.setDialogTitle("Save Project");
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Metrics Suite (*.ms)", "ms"));
+            String safeProject = projectName.trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+            chooser.setSelectedFile(new java.io.File(safeProject + ".ms"));
 
-        String safeProject = projectName.trim().replaceAll("[\\\\/:*?\"<>|]", "_");
-        chooser.setSelectedFile(new java.io.File(safeProject + ".ms"));
+            int result = chooser.showSaveDialog(this);
+            if (result != javax.swing.JFileChooser.APPROVE_OPTION) {
+                return;
+            }
 
-        int result = chooser.showSaveDialog(this);
-        if (result != javax.swing.JFileChooser.APPROVE_OPTION) {
-            return;
-        }
+            File chosenFile = chooser.getSelectedFile();
+            File dir = chosenFile.getParentFile();
 
-        File file = chooser.getSelectedFile();
+            if (dir == null) {
+                dir = chooser.getCurrentDirectory();
+            }
 
-        File dir = file.getParentFile();
-        File target = new File(dir, safeProject + ".ms");
+            File target = new File(dir, safeProject + ".ms");
 
-// If user chose a different name, inform them (optional)
-        if (!target.getName().equalsIgnoreCase(file.getName())) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Saving project using the project name:\n" + target.getName(),
-                    "Filename adjusted",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE
-            );
-        }
+            // If user chose a different name, inform them
+            if (!target.getName().equalsIgnoreCase(chosenFile.getName())) {
+                javax.swing.JOptionPane.showMessageDialog(
+                        this,
+                        "Saving project using the project name:\n" + target.getName(),
+                        "Filename adjusted",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+            }
 
-        file = target;
+            file = target;
 
-        if (file.exists()) {
-            int choice = javax.swing.JOptionPane.showConfirmDialog(
-                    this,
-                    "File already exists:\n" + file.getName() + "\n\nReplace it?",
-                    "Confirm overwrite",
-                    javax.swing.JOptionPane.YES_NO_OPTION,
-                    javax.swing.JOptionPane.WARNING_MESSAGE
-            );
-            if (choice != javax.swing.JOptionPane.YES_OPTION) {
-                return; // user cancelled overwrite
+            // Only ask Replace on first save, when choosing the file
+            if (file.exists()) {
+                int choice = javax.swing.JOptionPane.showConfirmDialog(
+                        this,
+                        "File already exists:\n" + file.getName() + "\n\nReplace it?",
+                        "Confirm overwrite",
+                        javax.swing.JOptionPane.YES_NO_OPTION,
+                        javax.swing.JOptionPane.WARNING_MESSAGE
+                );
+
+                if (choice != javax.swing.JOptionPane.YES_OPTION) {
+                    return;
+                }
             }
         }
-
         java.util.Properties props = new java.util.Properties();
 
         // ---- project metadata (4.35 / 4.37) ----
@@ -653,7 +681,8 @@ public class MainFrame extends javax.swing.JFrame {
         }
         try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
             props.store(out, "CECS 544 Metrics Suite Project");
-            javax.swing.JOptionPane.showMessageDialog(this, "Saved: " + file.getName());
+            currentProjectFile = file;
+            //javax.swing.JOptionPane.showMessageDialog(this, "Saved: " + file.getName());
             markClean();
         } catch (Exception ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "Save failed: " + ex.getMessage());
@@ -684,6 +713,7 @@ public class MainFrame extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Open failed: " + ex.getMessage());
             return;
         }
+        currentProjectFile = file;
 
         // ---- project metadata ----
         projectName = props.getProperty("project.name", "");
@@ -810,12 +840,11 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
 
-        if (hasOpenPanelType("smi")) {
+        if (hasOpenPanelType("smi") || hasClosedPanelType("smi")) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "Only one Software Maturity Index panel is allowed per project.");
+                    "Only one Software Maturity Index panel is allowed per project. Reopen the closed SMI tab instead.");
             return;
         }
-
         SMIPanel smiPanel = new SMIPanel();
 
         jTabbedPane1.addTab("Software Maturity Index", smiPanel);

@@ -85,37 +85,37 @@ public class SMIPanel extends javax.swing.JPanel {
             }
         });
     }
-    
+
     private void enableReplaceExistingValueOnEdit() {
-    javax.swing.JTextField textField = new javax.swing.JTextField();
+        javax.swing.JTextField textField = new javax.swing.JTextField();
 
-    javax.swing.DefaultCellEditor editor = new javax.swing.DefaultCellEditor(textField) {
-        @Override
-        public java.awt.Component getTableCellEditorComponent(
-                javax.swing.JTable table,
-                Object value,
-                boolean isSelected,
-                int row,
-                int column) {
+        javax.swing.DefaultCellEditor editor = new javax.swing.DefaultCellEditor(textField) {
+            @Override
+            public java.awt.Component getTableCellEditorComponent(
+                    javax.swing.JTable table,
+                    Object value,
+                    boolean isSelected,
+                    int row,
+                    int column) {
 
-            java.awt.Component component = super.getTableCellEditorComponent(
-                    table, value, isSelected, row, column);
+                java.awt.Component component = super.getTableCellEditorComponent(
+                        table, value, isSelected, row, column);
 
-            SwingUtilities.invokeLater(() -> {
-                textField.requestFocusInWindow();
-                textField.selectAll();
-            });
+                SwingUtilities.invokeLater(() -> {
+                    textField.requestFocusInWindow();
+                    textField.selectAll();
+                });
 
-            return component;
-        }
-    };
+                return component;
+            }
+        };
 
-    editor.setClickCountToStart(1);
+        editor.setClickCountToStart(1);
 
-    tblSMI.setDefaultEditor(Object.class, editor);
-    tblSMI.setSurrendersFocusOnKeystroke(true);
-    tblSMI.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-}
+        tblSMI.setDefaultEditor(Object.class, editor);
+        tblSMI.setSurrendersFocusOnKeystroke(true);
+        tblSMI.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+    }
 
     private int parseIntValue(Object value) {
         if (value == null || value.toString().trim().isEmpty()) {
